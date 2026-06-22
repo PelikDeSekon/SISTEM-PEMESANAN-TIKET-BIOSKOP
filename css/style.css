@@ -1,0 +1,490 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+:root{
+    --bg-dark: #0f0f1a;
+    --bg-card: #1c1c2b;
+    --primary: #8e86c9;
+    --accent: #ff4d6d;
+    --text: #f1f1ff;
+}
+
+body{
+    background: radial-gradient(circle at top, #1a1a2e, #0f0f1a);
+    color: var(--text);
+}
+
+a{
+    text-decoration: none;
+    color: var(--primary);
+    transition: 0.2s;
+}
+
+a:hover{
+    color: #ffffff;
+}
+
+h1{ font-size: 2.5rem; }
+h2{
+    font-size: 3rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+h3{ font-size: 1.3rem; }
+
+
+.navbar{
+    background: rgba(20,20,35,0.7);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 16px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.navbar-inner{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo{
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 3px;
+}
+
+nav a{
+    font-size: 1.1rem;
+    margin-left: 20px;
+    font-weight: 700;
+    position: relative;
+}
+
+nav a::after{
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background: var(--primary);
+    transition: 0.3s;
+}
+
+nav a:hover::after{
+    width: 100%;
+}
+
+
+.section{
+    padding: 40px 24px;
+}
+
+
+.movie{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    
+}
+
+
+.card{
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--bg-card);
+   
+}
+
+.card img{
+    width: 100%;
+    display: block;
+    transition: 0.3s;
+}
+
+.card:hover img{
+    transform: scale(1.1);
+}
+
+
+.slide-wrapper{
+    max-width: 1000px;
+    margin: auto;
+    position: relative;
+}
+
+.sliders{
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 30px 10px;
+}
+
+.sliders img{
+    width: 220px;
+    border-radius: 14px;
+    opacity: 0.7;
+    transition: 0.3s;
+}
+
+.sliders img:hover{
+    transform: scale(1.15);
+    opacity: 1;
+}
+
+.sliders:hover img:not(:hover){
+    transform: scale(0.95);
+    opacity: 0.4;
+}
+
+.slide-btn{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.slide-btn:hover{
+    background: var(--accent);
+}
+
+.prev{ left: -9px;}
+.next{ right: -10px; }
+
+.search-box{
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.search-box input{
+    width: 300px;
+    padding: 14px 20px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    background: var(--bg-card);
+    color: var(--text);
+    font-size: 16px;
+    text-align: center;
+}
+
+.search-box input:focus{
+    box-shadow: 0 0 10px var(--primary);
+}
+
+
+footer{
+    padding: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+
+::-webkit-scrollbar{
+    height: 6px;
+}
+
+::-webkit-scrollbar-thumb{
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+.Promo-grids{
+    display: flex;
+   justify-content: center;
+    gap: 20px;
+    
+}
+
+.promo{
+    background: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 100px;
+    text-align: center;
+    border-radius: 16px;
+
+}
+
+.promo h3{
+    font-size: 1.5rem;
+}
+
+.card{
+    position: relative;
+    height: 350px;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+/* poster gambar */
+.poster{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.3s;
+}
+
+/* trailer disembunyikan awalnya */
+.trailer{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: 0.3s;
+   
+}
+
+/* hover effect */
+.card:hover .trailer{
+    opacity: 1;
+}
+
+.card:hover .poster{
+    opacity: 0;
+}
+
+/* sembunyikan checkbox */
+#menu-toggle{
+    display: none;
+}
+
+/* hamburger style */
+.hamburger{
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.hamburger span{
+    width: 25px;
+    height: 3px;
+    background: var(--text);
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.play-btn{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+    background: rgba(0,0,0,0.6);
+    padding: 10px 14px;
+    border-radius: 50%;
+    color: white;
+    pointer-events: none; /* biar klik tetap ke iframe */
+}
+
+
+/* MOBILE */
+@media (max-width: 768px){
+
+    .hamburger{
+        display: flex;
+    }
+
+    nav{
+        position: absolute;
+        top: 70px;
+        right: 0;
+        background: var(--bg-card);
+        flex-direction: column;
+        width: 200px;
+        display: none;
+        padding: 15px;
+        border-radius: 0 0 0 12px;
+    }
+
+    nav a{
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    /* SAAT CHECKED → tampilkan menu */
+    #menu-toggle:checked ~ nav{
+        display: flex;
+    }
+
+    /* ANIMASI HAMBURGER → X */
+    #menu-toggle:checked + .hamburger span:nth-child(1){
+        transform: rotate(45deg) translate(5px,5px);
+    }
+
+    #menu-toggle:checked + .hamburger span:nth-child(2){
+        opacity: 0;
+    }
+
+    #menu-toggle:checked + .hamburger span:nth-child(3){
+        transform: rotate(-45deg) translate(6px,-6px);
+    }
+}
+
+@media (max-width: 768px){
+    .slide-btn{display: none;}
+
+    /* NAVBAR */
+    .navbar{
+        padding: 14px 20px;
+    }
+
+    .logo{
+        font-size: 1.5rem;
+    }
+
+    /* SECTION */
+    .section{
+        padding: 30px 16px;
+    }
+
+    h2{
+        font-size: 2rem;
+    }
+
+    /* MOVIE GRID */
+    .movie{
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .card{
+        aspect-ratio: 2/3;
+        height: auto;
+    }
+
+    /* SLIDER */
+    .sliders img{
+        width: 160px;
+    }
+
+    /* SEARCH */
+    .search-box input{
+        width: 90%;
+        font-size: 14px;
+    }
+
+    /* PROMO */
+    .Promo-grids{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .promo{
+        width: 100%;
+        padding: 60px 20px;
+    }
+
+    /* BUTTON SLIDE (biar nggak keluar layar) */
+    .prev{
+        left: 5px;
+    }
+
+    .next{
+        right: 5px;
+    }
+    .card{
+        height: auto; /* penting */
+        aspect-ratio: 2 / 3; /* biar tetap proporsional kayak poster */
+    }
+
+    .poster{
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .trailer{
+        height: 100%;
+    }
+        .card:active .trailer{
+        opacity: 1;
+    }
+
+    .card:active .poster{
+        opacity: 0;
+    }
+     .play-btn{
+        opacity: 1;
+    }
+}
+
+/* ANIMASI REFRESH */
+body{
+    animation: fadeInBody 0.8s ease;
+}
+
+@keyframes fadeInBody{
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+.navbar{
+    animation: slideDown 0.8s ease;
+}
+
+@keyframes slideDown{
+    from{
+        transform: translateY(-40px);
+        opacity: 0;
+    }
+    to{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.navbar{
+    animation: slideDown 0.8s ease;
+}
+
+.card{
+    animation: fadeUp 0.8s ease;
+}
+
+@keyframes fadeUp{
+    from{
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.card:nth-child(1){ animation-delay: 0.1s; }
+.card:nth-child(2){ animation-delay: 0.2s; }
+.card:nth-child(3){ animation-delay: 0.3s; }
+.card:nth-child(4){ animation-delay: 0.4s; }
+.card:nth-child(5){ animation-delay: 0.5s; }
+.card:nth-child(6){ animation-delay: 0.6s; }
+
+.card{
+    animation-fill-mode: both;
+}
+
+.section{
+    animation: fadeUp 1s ease;
+}
