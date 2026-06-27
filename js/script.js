@@ -33,7 +33,25 @@ let state = {
 let bookings = [];
 let bookingIdCounter = 1;
 
+function saveToStorage() {
+    localStorage.setItem("stix_bookings", JSON.stringify(bookings));
+    localStorage.setItem("stix_counter", bookingIdCounter);
+    localStorage.setItem("stix_bookedSeats", JSON.stringify([...state.bookedSeats]));
+}
+
+function loadFromStorage() {
+    const saved = localStorage.getItem("stix_bookings");
+    if (saved) bookings = JSON.parse(saved);
+
+    const counter = localStorage.getItem("stix_counter");
+    if (counter) bookingIdCounter = parseInt(counter);
+
+    const seats = localStorage.getItem("stix_bookedSeats");
+    if (seats) state.bookedSeats = new Set(JSON.parse(seats));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    loadFromStorage();
     renderBookingSteps();
     renderTable();
 });
@@ -394,6 +412,7 @@ function handleSubmit() {
         total: total,
     };
     bookings.push(newBooking);
+    saveToStorage();
 
     state.selectedSeats.forEach((s) => {
         state.bookedSeats.add(`${s.row}-${s.col}`);
@@ -472,6 +491,7 @@ function deleteBooking(id) {
     }
 
     bookings = bookings.filter((b) => b.id !== id);
+    saveToStorage();
     renderTable();
 }
 
