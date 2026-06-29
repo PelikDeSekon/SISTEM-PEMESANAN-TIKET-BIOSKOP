@@ -196,24 +196,6 @@ footer {
     border-radius: 10px;
 }
 
-.Promo-grids {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.promo {
-    background: var(--bg-card);
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 100px;
-    text-align: center;
-    border-radius: 16px;
-}
-
-.promo h3 {
-    font-size: 1.5rem;
-}
-
 .card {
     position: relative;
     height: 350px;
@@ -342,15 +324,6 @@ footer {
         font-size: 14px;
     }
 
-    .Promo-grids {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .promo {
-        width: 100%;
-        padding: 60px 20px;
-    }
 
     .prev { left: 5px; }
     .next { right: 5px; }
