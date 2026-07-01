@@ -27,16 +27,40 @@ let state = {
     selectedMovie: null,
     selectedTime: null,
     selectedSeats: [],
-    bookedSeats: new Set(),
 };
 
 let bookings = [];
 let bookingIdCounter = 1;
 
+// Kursi terpesan dihitung per pertunjukan (mall + film + jam).
+// Sumber kebenaran tunggal: daftar `bookings`.
+let bookedSeatsByScreening = {};
+
+function screeningKey(mallId, movieId, time) {
+    return `${mallId}|${movieId}|${time}`;
+}
+
+function rebuildBookedSeats() {
+    bookedSeatsByScreening = {};
+    bookings.forEach((b) => {
+        if (b.mallId == null || b.movieId == null || !b.seatKeys) return;
+        const key = screeningKey(b.mallId, b.movieId, b.time);
+        if (!bookedSeatsByScreening[key]) bookedSeatsByScreening[key] = new Set();
+        b.seatKeys.forEach((sk) => bookedSeatsByScreening[key].add(sk));
+    });
+}
+
+function getCurrentBookedSeats() {
+    if (!state.selectedMall || !state.selectedMovie || !state.selectedTime) {
+        return new Set();
+    }
+    const key = screeningKey(state.selectedMall.id, state.selectedMovie.id, state.selectedTime);
+    return bookedSeatsByScreening[key] || new Set();
+}
+
 function saveToStorage() {
     localStorage.setItem("stix_bookings", JSON.stringify(bookings));
     localStorage.setItem("stix_counter", bookingIdCounter);
-    localStorage.setItem("stix_bookedSeats", JSON.stringify([...state.bookedSeats]));
 }
 
 function loadFromStorage() {
@@ -46,8 +70,7 @@ function loadFromStorage() {
     const counter = localStorage.getItem("stix_counter");
     if (counter) bookingIdCounter = parseInt(counter);
 
-    const seats = localStorage.getItem("stix_bookedSeats");
-    if (seats) state.bookedSeats = new Set(JSON.parse(seats));
+    rebuildBookedSeats();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -65,7 +88,8 @@ function renderBookingSteps() {
     namaGroup.className = "field-group";
     namaGroup.innerHTML = `
         <label class="field-label" for="inputName">Nama Pemesan <span class="required-star">*</span></label>
-        <input type="text" id="inputName" class="field-input" placeholder="Masukkan nama kamu" value="${state.customerName}" autocomplete="name">
+        <input type="text" id="inputName" class="field-input" placeholder="Masukkan nama kamu" value="${state.customerName}" autocomplete="name" maxlength="40">
+        <small class="field-hint">Huruf saja, tanpa angka atau simbol.</small>
     `;
     container.appendChild(namaGroup);
 
@@ -133,7 +157,11 @@ function renderBookingSteps() {
     const nameInput = document.getElementById("inputName");
     if (nameInput) {
         nameInput.addEventListener("input", (e) => {
-            state.customerName = e.target.value.trim();
+            const filtered = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+            if (filtered !== e.target.value) {
+                e.target.value = filtered;
+            }
+            state.customerName = filtered.trim();
             hideError();
             updateSummary();
         });
@@ -191,7 +219,7 @@ function selectTime(time) {
 
 function toggleSeat(row, col) {
     const key = `${row}-${col}`;
-    if (state.bookedSeats.has(key)) return;
+    if (getCurrentBookedSeats().has(key)) return;
 
     const idx = state.selectedSeats.findIndex((s) => s.row === row && s.col === col);
     if (idx > -1) {
@@ -261,6 +289,8 @@ function renderSeatGrid() {
 
     grid.innerHTML = "";
 
+    const booked = getCurrentBookedSeats();
+
     for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
             if (c === 5) {
@@ -271,11 +301,11 @@ function renderSeatGrid() {
 
             const seat = document.createElement("div");
             const key = `${r}-${c}`;
-            const canSelect = !state.bookedSeats.has(key) && !!state.selectedTime;
+            const canSelect = !booked.has(key) && !!state.selectedTime;
 
             seat.className = "seat";
 
-            if (state.bookedSeats.has(key)) {
+            if (booked.has(key)) {
                 seat.classList.add("booked");
             } else if (state.selectedSeats.some((s) => s.row === r && s.col === c)) {
                 seat.classList.add("selected");
@@ -395,28 +425,49 @@ document.addEventListener("submit", (e) => {
 function handleSubmit() {
     if (!validateForm()) return;
 
+    // Pengaman: pastikan kursi yang dipilih belum dipesan orang lain
+    // untuk pertunjukan (mall + film + jam) yang sama.
+    const booked = getCurrentBookedSeats();
+    const clash = state.selectedSeats.some((s) => booked.has(`${s.row}-${s.col}`));
+    if (clash) {
+        state.selectedSeats = state.selectedSeats.filter(
+            (s) => !booked.has(`${s.row}-${s.col}`)
+        );
+        const errorDiv = document.getElementById("formError");
+        if (errorDiv) {
+            errorDiv.innerHTML =
+                "Maaf, sebagian kursi yang kamu pilih sudah dipesan orang lain. Silakan pilih kursi lain.";
+            errorDiv.style.display = "block";
+        }
+        renderSeatGrid();
+        updateSummary();
+        return;
+    }
+
     const seats = state.selectedSeats
         .map((s) => `${ROW_LABELS[s.row]}${s.col + 1}`)
         .join(", ");
+
+    const seatKeys = state.selectedSeats.map((s) => `${s.row}-${s.col}`);
 
     const total = state.selectedSeats.length * PRICE_PER_SEAT;
 
     const newBooking = {
         id: bookingIdCounter++,
         name: state.customerName,
+        mallId: state.selectedMall.id,
         mall: state.selectedMall.name,
+        movieId: state.selectedMovie.id,
         movie: state.selectedMovie.title,
         time: state.selectedTime,
         seats: seats,
+        seatKeys: seatKeys,
         seatCount: state.selectedSeats.length,
         total: total,
     };
     bookings.push(newBooking);
     saveToStorage();
-
-    state.selectedSeats.forEach((s) => {
-        state.bookedSeats.add(`${s.row}-${s.col}`);
-    });
+    rebuildBookedSeats();
 
     state.selectedSeats = [];
 
@@ -492,6 +543,7 @@ function deleteBooking(id) {
 
     bookings = bookings.filter((b) => b.id !== id);
     saveToStorage();
+    rebuildBookedSeats();
     renderTable();
 }
 
