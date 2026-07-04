@@ -50,6 +50,7 @@ h3 { font-size: 1.3rem; }
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
 .logo {
@@ -83,11 +84,14 @@ nav a:hover::after {
 
 .section {
     padding: 40px 24px;
+    max-width: 1200px; /* Menyelaraskan batas lebar dengan navbar */
+    margin: 0 auto;    /* Kunci utama agar konten film ikut ke tengah saat di-zoom out */
+    width: 100%;
 }
 
 .movie {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(6,1fr);
     gap: 20px;
 }
 
